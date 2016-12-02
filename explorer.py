@@ -3,9 +3,12 @@ import re
 def json_get(json, json_path):
     """Get a value based on a json_path key
     """
-    if not json_path:
-        return json
-    return json_get(json[json_path[0]], json_path[1:])
+    for key in json_path:
+        try:
+            json = json[key]
+        except (TypeError, KeyError):
+            return
+    return json
 
 def walk(json, sep='/', escape='MOZESCAPE'):
     """Walk a json blob, returning a list of all key paths
