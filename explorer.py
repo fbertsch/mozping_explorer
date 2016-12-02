@@ -16,6 +16,7 @@ def get_escaped_keys(json, sep, escape):
 def walk(json, sep='/', escape='MOZESCAPE'):
     """Walk a json blob, returning a list of all key paths
     """
+    match_reg = r'(?<!{}){}'.format(escape, sep)
     explored, unexplored = set(), set(get_escaped_keys(json, sep, escape))
 
     while unexplored:
@@ -23,7 +24,7 @@ def walk(json, sep='/', escape='MOZESCAPE'):
         explored.add(next)
 
         #don't match on escape chars
-        next_path = re.split(r'(?<!{}){}'.format(escape, sep), next)
+        next_path = re.split(match_reg, next)
 
         #remove escape chars before following path
         val = json_get(json, [np.replace(escape, '') for np in next_path])
@@ -31,7 +32,7 @@ def walk(json, sep='/', escape='MOZESCAPE'):
         if type(val) is dict:
             unexplored |= set([sep.join((next, k)) for k in get_escaped_keys(val, sep, escape)])
 
-    return [x.replace(escape, '') for x in sorted(list(explored), key=lambda x: x.count(sep))]
+    return [x.replace(escape, '') for x in sorted(list(explored), key=lambda x: len(re.split(match_reg, x)))]
 
 def find(json, needle):
     """Returns all paths containing needle 
