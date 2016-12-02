@@ -10,10 +10,13 @@ def json_get(json, json_path):
             return
     return json
 
+def get_escaped_keys(json, sep, escape):
+    return [k.replace(sep, escape+sep) for k in json.keys()]
+
 def walk(json, sep='/', escape='MOZESCAPE'):
     """Walk a json blob, returning a list of all key paths
     """
-    explored, unexplored = set(), set(json.keys())
+    explored, unexplored = set(), set(get_escaped_keys(json, sep, escape))
 
     while unexplored:
         next = unexplored.pop()
@@ -26,7 +29,7 @@ def walk(json, sep='/', escape='MOZESCAPE'):
         val = json_get(json, [np.replace(escape, '') for np in next_path])
 
         if type(val) is dict:
-            unexplored |= set([sep.join((next, k.replace(sep, escape+sep))) for k in val.keys()])
+            unexplored |= set([sep.join((next, k)) for k in get_escaped_keys(val, sep, escape)])
 
     return sorted(list(explored), key=lambda x: x.count(sep))
 
