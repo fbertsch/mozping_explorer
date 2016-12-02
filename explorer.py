@@ -31,7 +31,7 @@ def walk(json, sep='/', escape='MOZESCAPE'):
         if type(val) is dict:
             unexplored |= set([sep.join((next, k)) for k in get_escaped_keys(val, sep, escape)])
 
-    return sorted(list(explored), key=lambda x: x.count(sep))
+    return [x.replace(escape, '') for x in sorted(list(explored), key=lambda x: x.count(sep))]
 
 def find(json, needle):
     """Returns all paths containing needle 
