@@ -35,7 +35,11 @@ def walk(json, sep='/', escape='MOZESCAPE', include_escape=False):
     map_func = lambda x: x if include_escape else x.replace(escape, '')
     return {map_func(sep.join(x)) for x in explored}
 
-def find(json, needle):
+def find(json, needle, case=False):
     """Returns all paths containing needle 
+
+    :param json, the haystack to search
+    :param needle, the string to find
+    :param case, whether this is case sensitive (default False)
     """
-    return {k for k in walk(json) if needle in k}
+    return {k for k in walk(json) if (needle in k if case else needle.lower() in k.lower())}
